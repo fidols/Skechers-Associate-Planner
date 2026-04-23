@@ -65,3 +65,22 @@ def test_months_of_supply_columns():
 def test_months_of_supply_positive():
     mos = months_of_supply(make_otb_df())
     assert (mos["months_of_supply"] >= 0).all()
+
+
+def test_months_of_supply_correctness():
+    mos = months_of_supply(make_otb_df())
+    japan_retail = mos[(mos["country"] == "Japan") & (mos["channel"] == "Normal Retail")]
+    # avg_monthly_sales=500, avg_end_inventory=3000 → 3000/500 = 6.0
+    assert japan_retail["months_of_supply"].iloc[0] == 6.0
+
+
+def test_months_of_supply_zero_sales_returns_nan():
+    df = pd.DataFrame({
+        "country": ["Japan"],
+        "channel": ["Normal Retail"],
+        "sales": [0],
+        "end_inventory": [1000],
+    })
+    mos = months_of_supply(df)
+    import math
+    assert math.isnan(mos["months_of_supply"].iloc[0])

@@ -43,6 +43,6 @@ def months_of_supply(otb_df: pd.DataFrame) -> pd.DataFrame:
         .reset_index()
     )
     agg["months_of_supply"] = (
-        agg["avg_end_inventory"] / agg["avg_monthly_sales"]
+        agg["avg_end_inventory"] / agg["avg_monthly_sales"].replace(0, float("nan"))
     ).round(1)
     return agg

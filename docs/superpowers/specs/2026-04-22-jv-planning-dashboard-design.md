@@ -106,7 +106,15 @@ Generated per (style × country × channel):
 ## Pages
 
 ### app.py — Overview
-**Purpose:** Landing page and global navigation
+**Purpose:** Landing page and global navigation — gives leadership a pulse on all JV markets at a glance before drilling in.
+
+**Stakeholders:** Senior Merchandisers, JV Regional Leads, Planning Manager
+
+**Decisions enabled:**
+- Which markets are tracking below sales target this quarter and need attention?
+- Is overall sell-through healthy enough to hold current inventory levels?
+- How much open-to-buy capacity is left across the portfolio?
+- Which markets have the most at-risk SKUs requiring immediate action?
 
 - **Sidebar filters** (apply to all pages):
   - Quarter (single select)
@@ -121,7 +129,15 @@ Generated per (style × country × channel):
 ---
 
 ### Page 1 — Quarterly Recap
-**Purpose:** Mirrors the "quarterly recaps at the business channel level by country" responsibility
+**Purpose:** Pre-season and in-season performance review at the channel and division level — the primary artifact shared in monthly/quarterly business reviews with JV partners.
+
+**Stakeholders:** JV Country Partners, Merchandisers, Planning Manager
+
+**Decisions enabled:**
+- Which channels are missing plan and by how much? Should targets be revised?
+- Are specific divisions over- or under-performing relative to mix expectations?
+- Where should next season's buy budget be shifted (up or down) by channel?
+- What narrative should be communicated to JV partners in the next conference call?
 
 - **Grouped bar chart:** Sales vs. Target by channel (filtered by country/quarter)
 - **Stacked bar chart:** Sales by division over time (trend across all quarters)
@@ -130,7 +146,15 @@ Generated per (style × country × channel):
 ---
 
 ### Page 2 — OTB Tracker
-**Purpose:** Mirrors "maintains in-season data via monthly OTB"
+**Purpose:** Monthly in-season inventory health check — ensures JV markets are buying the right amount and not over- or under-committing against the plan.
+
+**Stakeholders:** JV Country Partners, Merchandisers, IT/Systems (for reporting automation)
+
+**Decisions enabled:**
+- Does this market have budget remaining to chase a fast-selling style, or is OTB exhausted?
+- Which channels are sitting on excess inventory (high months of supply) and need a markdown or hold on receipts?
+- Are committed units aligned with the sales trajectory, or is the market over-committed?
+- Should receipts be pulled forward or pushed back to optimize end-of-season inventory?
 
 - **Line chart:** Monthly inventory flow — beg inventory, receipts, sales, end inventory (per country)
 - **Bar chart:** OTB Budget vs. Committed vs. Open-to-Buy by country
@@ -139,7 +163,15 @@ Generated per (style × country × channel):
 ---
 
 ### Page 3 — SKU Performance
-**Purpose:** Mirrors "identify/react to in-season misses/opportunities at the style/SKU level"
+**Purpose:** Style-level opportunity and risk identification — the tactical layer used to make assortment decisions within the season and inform future buys.
+
+**Stakeholders:** Merchandisers, JV Country Partners, Associate Planner (self-directed analysis)
+
+**Decisions enabled:**
+- Which styles should be reordered or chased because they are selling through fast with low weeks of supply?
+- Which styles are stalling and need a markdown, promotion, or exit strategy?
+- Are there division-level patterns in the risk/opportunity flags that suggest an assortment gap?
+- What styles should be dropped or added for the next seasonal assortment?
 
 - **Sortable table:** All SKUs with sell-through %, weeks of supply, flag badges (color-coded: red/green/gray)
 - **Bar chart:** Top 10 and Bottom 10 styles by sell-through %

@@ -1,3 +1,5 @@
+import math
+
 import streamlit as st
 import plotly.express as px
 
@@ -12,8 +14,8 @@ sales_df = st.session_state.get("sales_df")
 selected_quarter = st.session_state.get("selected_quarter")
 selected_countries = st.session_state.get("selected_countries")
 
-if sales_df is None:
-    st.warning("Please navigate to the Overview page first to load data.")
+if sales_df is None or selected_quarter is None or selected_countries is None:
+    st.warning("Please navigate to the Overview page first to load data and make selections.")
     st.stop()
 
 filtered = sales_df[
@@ -75,7 +77,7 @@ st.subheader("Country × Channel Summary")
 
 
 def color_variance(val):
-    if isinstance(val, (int, float)):
+    if isinstance(val, (int, float)) and not math.isnan(val):
         return "color: green" if val >= 0 else "color: red"
     return ""
 

@@ -11,7 +11,7 @@ def test_sales_data_columns():
     expected = {
         "country", "channel", "division", "quarter",
         "sales_units", "sales_dollars", "target_units", "target_dollars",
-        "AUR", "discount_pct",
+        "AUR",
     }
     assert expected.issubset(set(df.columns))
 
@@ -31,12 +31,6 @@ def test_sales_data_positive_values():
     assert (df["sales_units"] > 0).all()
     assert (df["sales_dollars"] > 0).all()
     assert (df["AUR"] > 0).all()
-
-
-def test_sales_data_discount_range():
-    df = generate_sales_data()
-    assert (df["discount_pct"] >= 0).all()
-    assert (df["discount_pct"] <= 1).all()
 
 
 def test_otb_data_columns():

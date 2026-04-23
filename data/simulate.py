@@ -41,10 +41,6 @@ def generate_sales_data() -> pd.DataFrame:
                     base_units = int(rng.integers(800, 3000) * COUNTRY_VOLUME[country])
                     target_units = int(base_units * rng.uniform(0.9, 1.15))
                     aur = CHANNEL_AUR[channel] * rng.uniform(0.9, 1.1)
-                    if channel == "Outlet":
-                        discount_pct = rng.uniform(0.25, 0.40)
-                    else:
-                        discount_pct = rng.uniform(0.03, 0.18)
                     sales_dollars = round(base_units * aur, 2)
                     target_dollars = round(target_units * aur, 2)
                     rows.append({
@@ -57,7 +53,6 @@ def generate_sales_data() -> pd.DataFrame:
                         "target_units": target_units,
                         "target_dollars": target_dollars,
                         "AUR": round(aur, 2),
-                        "discount_pct": round(float(discount_pct), 3),
                     })
     return pd.DataFrame(rows)
 

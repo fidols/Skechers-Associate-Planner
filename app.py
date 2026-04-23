@@ -25,7 +25,7 @@ st.session_state["sku_df"] = sku_df
 
 # --- Sidebar filters (shared across all pages) ---
 st.sidebar.title("Filters")
-quarters = sales_df["quarter"].unique().tolist()
+quarters = sorted(sales_df["quarter"].unique().tolist())
 selected_quarter = st.sidebar.selectbox("Quarter", quarters, index=len(quarters) - 1)
 
 countries = sorted(sales_df["country"].unique().tolist())

@@ -19,7 +19,7 @@ def overview_kpis(
     total_sold = sku_df["units_sold"].sum()
     total_available = total_sold + sku_df["units_on_hand"].sum()
     sell_through = total_sold / total_available if total_available > 0 else 0.0
-    avg_otb = otb_df["open_to_buy"].mean()
+    avg_otb = otb_df["open_to_buy"].mean() if not otb_df.empty else 0.0
     risk_count = int((sku_df["flag"] == "Risk").sum())
     return {
         "total_sales_dollars": round(float(total_sales), 2),

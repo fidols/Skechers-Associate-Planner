@@ -34,6 +34,12 @@ if channel_filter != "All":
 if flag_filter != "All":
     filtered = filtered[filtered["flag"] == flag_filter]
 
+filtered = filtered.copy()
+
+if filtered.empty:
+    st.info("No SKUs match the selected filters. Adjust Division, Channel, or Flag.")
+    st.stop()
+
 # --- Flag display with emoji badges ---
 FLAG_ICONS = {"Opportunity": "🟢", "Risk": "🔴", "On Track": "⚪"}
 filtered["Flag"] = filtered["flag"].map(FLAG_ICONS) + " " + filtered["flag"]

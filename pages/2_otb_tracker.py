@@ -13,7 +13,7 @@ st.divider()
 otb_df = st.session_state.get("otb_df")
 selected_countries = st.session_state.get("selected_countries")
 
-if otb_df is None or selected_countries is None:
+if otb_df is None or not selected_countries:
     st.warning("Please navigate to the Overview page first to load data and make selections.")
     st.stop()
 

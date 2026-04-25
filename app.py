@@ -56,9 +56,11 @@ st.divider()
 # --- KPI cards ---
 kpis = overview_kpis(filtered_sales, filtered_otb, filtered_sku)
 col1, col2, col3, col4 = st.columns(4)
-col1.metric("Total Sales", f"${kpis['total_sales_dollars']:,.0f}")
+total_sales = kpis["total_sales_dollars"]
+sales_display = f"${total_sales/1e6:.1f}M" if total_sales >= 1e6 else f"${total_sales:,.0f}"
+col1.metric("Total Sales", sales_display)
 col2.metric("Sell-Through", f"{kpis['sell_through_pct'] * 100:.1f}%")
-col3.metric("Avg OTB Remaining", f"{kpis['avg_otb_remaining']:,.0f} units")
+col3.metric("Avg OTB Remaining (units)", f"{kpis['avg_otb_remaining']:,.0f}")
 col4.metric("Risk SKUs", f"{kpis['risk_sku_count']:,}")
 
 # --- Sales vs Target by country ---
@@ -85,4 +87,5 @@ fig = px.bar(
     labels={"USD": "Revenue (USD)", "country": "Country", "Metric": ""},
     color_discrete_map={"Actual Sales": "#1A1A1A", "Target": "#A7A9AC"},
 )
+fig.update_yaxes(tickprefix="$", tickformat="~s")
 st.plotly_chart(fig, use_container_width=True)

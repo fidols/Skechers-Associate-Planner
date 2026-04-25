@@ -34,7 +34,7 @@ country_monthly = (
     .reset_index()
 )
 country_monthly = country_monthly.rename(columns={
-    "beg_inventory": "Beg. Inventory",
+    "beg_inventory": "Beginning Inventory",
     "receipts": "Receipts",
     "sales": "Sales",
     "end_inventory": "End Inventory",
@@ -43,7 +43,7 @@ country_monthly = country_monthly.rename(columns={
 fig1 = px.line(
     country_monthly.melt(
         id_vars="month",
-        value_vars=["Beg. Inventory", "Receipts", "Sales", "End Inventory"],
+        value_vars=["Beginning Inventory", "Receipts", "Sales", "End Inventory"],
         var_name="Metric",
         value_name="Units",
     ),
@@ -53,7 +53,7 @@ fig1 = px.line(
     title=f"Monthly Inventory Flow — {country}",
     labels={"month": "Month", "Metric": ""},
     color_discrete_map={
-        "Beg. Inventory": "#6D6E71",
+        "Beginning Inventory": "#6D6E71",
         "Receipts": "#A7A9AC",
         "Sales": "#1A1A1A",
         "End Inventory": "#E31837",
@@ -89,7 +89,7 @@ fig2 = px.bar(
     color="Category",
     barmode="group",
     title="OTB Budget vs. Committed vs. Open to Buy by Country",
-    labels={"Category": ""},
+    labels={"Category": "", "country": "Country"},
     color_discrete_map={
         "OTB Budget": "#1A1A1A",
         "Committed": "#6D6E71",
@@ -114,9 +114,17 @@ def highlight_mos(val):
 st.dataframe(
     mos[["country", "channel", "avg_monthly_sales", "months_of_supply"]]
     .rename(columns={
+        "country": "Country",
+        "channel": "Channel",
         "avg_monthly_sales": "Avg Monthly Sales (units)",
         "months_of_supply": "Months of Supply",
     })
-    .style.map(highlight_mos, subset=["Months of Supply"]),
+    .style
+    .format({
+        "Avg Monthly Sales (units)": "{:,.0f}",
+        "Months of Supply": "{:.1f}",
+    })
+    .map(highlight_mos, subset=["Months of Supply"]),
     use_container_width=True,
+    hide_index=True,
 )

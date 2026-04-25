@@ -47,6 +47,7 @@ fig1 = px.bar(
     labels={"USD": "Revenue (USD)", "channel": "Channel", "Metric": ""},
     color_discrete_map={"Actual Sales": "#1A1A1A", "Target": "#A7A9AC"},
 )
+fig1.update_yaxes(tickprefix="$", tickformat="~s")
 st.plotly_chart(fig1, use_container_width=True)
 
 # --- Stacked bar: Sales by division over all quarters ---
@@ -66,6 +67,7 @@ fig2 = px.bar(
     labels={"sales_dollars": "Revenue (USD)", "quarter": "Quarter", "division": "Division"},
     color_discrete_sequence=["#1A1A1A", "#E31837", "#6D6E71", "#A7A9AC"],
 )
+fig2.update_yaxes(tickprefix="$", tickformat="~s")
 st.plotly_chart(fig2, use_container_width=True)
 
 # --- Summary table with color-coded variance ---
@@ -86,7 +88,24 @@ def color_variance(val):
     return ""
 
 
+table = table.rename(columns={
+    "country": "Country",
+    "channel": "Channel",
+    "sales_dollars": "Sales ($)",
+    "target_dollars": "Target ($)",
+    "variance_dollars": "Variance ($)",
+    "variance_pct": "Variance %",
+})
+
 st.dataframe(
-    table.style.map(color_variance, subset=["variance_dollars", "variance_pct"]),
+    table.style
+    .format({
+        "Sales ($)": "${:,.0f}",
+        "Target ($)": "${:,.0f}",
+        "Variance ($)": "${:+,.0f}",
+        "Variance %": "{:+.1f}%",
+    })
+    .map(color_variance, subset=["Variance ($)", "Variance %"]),
     use_container_width=True,
+    hide_index=True,
 )

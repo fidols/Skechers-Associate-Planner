@@ -56,11 +56,17 @@ st.dataframe(
     .rename(columns={
         "style_id": "Style ID",
         "style_name": "Style Name",
+        "division": "Division",
+        "channel": "Channel",
+        "country": "Country",
+        "units_sold": "Units Sold",
+        "units_on_hand": "Units On Hand",
         "sell_through_pct": "ST%",
         "weeks_of_supply": "WOS",
     })
     .sort_values("ST%", ascending=False),
     use_container_width=True,
+    hide_index=True,
 )
 
 # --- Top 10 / Bottom 10 by sell-through ---
@@ -85,6 +91,7 @@ with col_a:
         labels={"sell_through_pct": "ST%", "style_name": "Style"},
         color_discrete_sequence=["#1A1A1A"],
     )
+    fig1.update_xaxes(tickformat=".0%")
     st.plotly_chart(fig1, use_container_width=True)
 
 with col_b:
@@ -97,4 +104,5 @@ with col_b:
         labels={"sell_through_pct": "ST%", "style_name": "Style"},
         color_discrete_sequence=["#E31837"],
     )
+    fig2.update_xaxes(tickformat=".0%")
     st.plotly_chart(fig2, use_container_width=True)

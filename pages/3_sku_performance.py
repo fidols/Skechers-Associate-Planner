@@ -83,7 +83,7 @@ with col_a:
         orientation="h",
         title="Top 10 Styles by Sell-Through %",
         labels={"sell_through_pct": "ST%", "style_name": "Style"},
-        color_discrete_sequence=["#2ca02c"],
+        color_discrete_sequence=["#1A1A1A"],
     )
     st.plotly_chart(fig1, use_container_width=True)
 
@@ -95,6 +95,6 @@ with col_b:
         orientation="h",
         title="Bottom 10 Styles by Sell-Through %",
         labels={"sell_through_pct": "ST%", "style_name": "Style"},
-        color_discrete_sequence=["#d62728"],
+        color_discrete_sequence=["#E31837"],
     )
     st.plotly_chart(fig2, use_container_width=True)

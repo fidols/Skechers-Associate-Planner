@@ -67,10 +67,13 @@ country_summary = (
     .agg(sales_dollars=("sales_dollars", "sum"), target_dollars=("target_dollars", "sum"))
     .reset_index()
 )
+country_summary["Actual Sales"] = country_summary["sales_dollars"]
+country_summary["Target"] = country_summary["target_dollars"]
+
 fig = px.bar(
     country_summary.melt(
         id_vars="country",
-        value_vars=["sales_dollars", "target_dollars"],
+        value_vars=["Actual Sales", "Target"],
         var_name="Metric",
         value_name="USD",
     ),
@@ -79,7 +82,7 @@ fig = px.bar(
     color="Metric",
     barmode="group",
     title=f"Sales vs. Target by Country — {selected_quarter}",
-    labels={"USD": "Revenue (USD)", "country": "Country"},
-    color_discrete_map={"sales_dollars": "#1f77b4", "target_dollars": "#aec7e8"},
+    labels={"USD": "Revenue (USD)", "country": "Country", "Metric": ""},
+    color_discrete_map={"Actual Sales": "#1A1A1A", "Target": "#A7A9AC"},
 )
 st.plotly_chart(fig, use_container_width=True)

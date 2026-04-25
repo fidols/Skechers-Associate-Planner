@@ -29,10 +29,13 @@ channel_summary = (
     .agg(sales_dollars=("sales_dollars", "sum"), target_dollars=("target_dollars", "sum"))
     .reset_index()
 )
+channel_summary["Actual Sales"] = channel_summary["sales_dollars"]
+channel_summary["Target"] = channel_summary["target_dollars"]
+
 fig1 = px.bar(
     channel_summary.melt(
         id_vars="channel",
-        value_vars=["sales_dollars", "target_dollars"],
+        value_vars=["Actual Sales", "Target"],
         var_name="Metric",
         value_name="USD",
     ),
@@ -41,8 +44,8 @@ fig1 = px.bar(
     color="Metric",
     barmode="group",
     title=f"Sales vs. Target by Channel — {selected_quarter}",
-    labels={"USD": "Revenue (USD)", "channel": "Channel"},
-    color_discrete_map={"sales_dollars": "#2ca02c", "target_dollars": "#98df8a"},
+    labels={"USD": "Revenue (USD)", "channel": "Channel", "Metric": ""},
+    color_discrete_map={"Actual Sales": "#1A1A1A", "Target": "#A7A9AC"},
 )
 st.plotly_chart(fig1, use_container_width=True)
 
@@ -60,7 +63,8 @@ fig2 = px.bar(
     color="division",
     barmode="stack",
     title="Sales by Division Over Time",
-    labels={"sales_dollars": "Revenue (USD)", "quarter": "Quarter"},
+    labels={"sales_dollars": "Revenue (USD)", "quarter": "Quarter", "division": "Division"},
+    color_discrete_sequence=["#1A1A1A", "#E31837", "#6D6E71", "#A7A9AC"],
 )
 st.plotly_chart(fig2, use_container_width=True)
 
@@ -78,7 +82,7 @@ st.subheader("Country × Channel Summary")
 
 def color_variance(val):
     if isinstance(val, (int, float)) and not math.isnan(val):
-        return "color: green" if val >= 0 else "color: red"
+        return "color: #1A1A1A" if val >= 0 else "color: #E31837"
     return ""
 
 

@@ -33,10 +33,17 @@ country_monthly = (
     )
     .reset_index()
 )
+country_monthly = country_monthly.rename(columns={
+    "beg_inventory": "Beg. Inventory",
+    "receipts": "Receipts",
+    "sales": "Sales",
+    "end_inventory": "End Inventory",
+})
+
 fig1 = px.line(
     country_monthly.melt(
         id_vars="month",
-        value_vars=["beg_inventory", "receipts", "sales", "end_inventory"],
+        value_vars=["Beg. Inventory", "Receipts", "Sales", "End Inventory"],
         var_name="Metric",
         value_name="Units",
     ),
@@ -44,7 +51,13 @@ fig1 = px.line(
     y="Units",
     color="Metric",
     title=f"Monthly Inventory Flow — {country}",
-    labels={"month": "Month"},
+    labels={"month": "Month", "Metric": ""},
+    color_discrete_map={
+        "Beg. Inventory": "#6D6E71",
+        "Receipts": "#A7A9AC",
+        "Sales": "#1A1A1A",
+        "End Inventory": "#E31837",
+    },
 )
 st.plotly_chart(fig1, use_container_width=True)
 
@@ -58,10 +71,16 @@ otb_summary = (
     )
     .reset_index()
 )
+otb_summary = otb_summary.rename(columns={
+    "otb_budget": "OTB Budget",
+    "committed_units": "Committed",
+    "open_to_buy": "Open to Buy",
+})
+
 fig2 = px.bar(
     otb_summary.melt(
         id_vars="country",
-        value_vars=["otb_budget", "committed_units", "open_to_buy"],
+        value_vars=["OTB Budget", "Committed", "Open to Buy"],
         var_name="Category",
         value_name="Units",
     ),
@@ -69,11 +88,12 @@ fig2 = px.bar(
     y="Units",
     color="Category",
     barmode="group",
-    title="OTB Budget vs. Committed vs. Open-to-Buy by Country",
+    title="OTB Budget vs. Committed vs. Open to Buy by Country",
+    labels={"Category": ""},
     color_discrete_map={
-        "otb_budget": "#1f77b4",
-        "committed_units": "#ff7f0e",
-        "open_to_buy": "#2ca02c",
+        "OTB Budget": "#1A1A1A",
+        "Committed": "#6D6E71",
+        "Open to Buy": "#E31837",
     },
 )
 st.plotly_chart(fig2, use_container_width=True)
@@ -87,7 +107,7 @@ mos = months_of_supply(filtered)
 
 def highlight_mos(val):
     if isinstance(val, float) and not (val != val) and val > 4:
-        return "background-color: #ffcccc"
+        return "background-color: #fde8ec; color: #E31837"
     return ""
 
 

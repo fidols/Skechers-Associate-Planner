@@ -85,3 +85,25 @@ def test_sku_flag_logic_opportunity():
     df = generate_sku_data()
     opp = df[df["flag"] == "Opportunity"]
     assert ((opp["sell_through_pct"] > 0.75) & (opp["weeks_of_supply"] < 4)).all()
+
+
+def test_country_volume_proportions():
+    """Japan should be the largest market, Mexico and South Korea close to equal."""
+    from data.simulate import COUNTRY_VOLUME
+    assert COUNTRY_VOLUME["Japan"] > COUNTRY_VOLUME["South Korea"]
+    assert COUNTRY_VOLUME["Japan"] > COUNTRY_VOLUME["Mexico"]
+    # Japan ~1.22, Mexico ~0.96, South Korea ~1.00 per Wolverine APAC/LatAm split
+    assert 1.15 <= COUNTRY_VOLUME["Japan"] <= 1.30
+    assert 0.85 <= COUNTRY_VOLUME["Mexico"] <= 1.05
+    assert 0.90 <= COUNTRY_VOLUME["South Korea"] <= 1.10
+
+
+def test_channel_aur_values():
+    """AURs should reflect realistic footwear industry pricing."""
+    from data.simulate import CHANNEL_AUR
+    # Ecommerce and Normal Retail should be highest AUR channels
+    assert CHANNEL_AUR["Ecommerce"] >= CHANNEL_AUR["Wholesale"]
+    assert CHANNEL_AUR["Normal Retail"] >= CHANNEL_AUR["Wholesale"]
+    assert CHANNEL_AUR["Outlet"] >= CHANNEL_AUR["Wholesale"]
+    # All AURs should be > $40 (realistic for branded footwear)
+    assert all(v >= 40 for v in CHANNEL_AUR.values())

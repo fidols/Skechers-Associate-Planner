@@ -29,7 +29,7 @@ CHANNELS = ["Normal Retail", "Outlet", "Franchise", "Wholesale", "Ecommerce"]
 DIVISIONS = ["Men's Sport", "Women's Sport", "Women's Comfort", "Kids"]
 QUARTERS = ["Q1 2024", "Q2 2024", "Q3 2024", "Q4 2024", "Q1 2025"]
 
-# Maps each JV country to its Skechers geographic segment (SKX 10-K terminology)
+# Application-defined geographic grouping, informed by SKX 10-K regional disclosures (AMER/EMEA/APAC)
 COUNTRY_REGION = {
     "China":       "Asia Pacific",
     "Malaysia":    "Asia Pacific",
@@ -139,6 +139,7 @@ def generate_sku_data() -> pd.DataFrame:
     for style_id, style_name, division in style_pool:
         for country in COUNTRIES:
             for channel in CHANNELS:
+                # SKU-level units are not scaled by COUNTRY_VOLUME — style performance is market-agnostic
                 units_sold = int(rng.integers(50, 600))
                 units_on_hand = int(rng.integers(20, 400))
                 avg_weekly = round(float(rng.uniform(5, 50)), 1)

@@ -87,15 +87,12 @@ def test_sku_flag_logic_opportunity():
     assert ((opp["sell_through_pct"] > 0.75) & (opp["weeks_of_supply"] < 4)).all()
 
 
-def test_country_volume_proportions():
-    """Japan should be the largest market, Mexico and South Korea close to equal."""
-    from data.simulate import COUNTRY_VOLUME
-    assert COUNTRY_VOLUME["Japan"] > COUNTRY_VOLUME["South Korea"]
-    assert COUNTRY_VOLUME["Japan"] > COUNTRY_VOLUME["Mexico"]
-    # Japan ~1.22, Mexico ~0.96, South Korea ~1.00 per Wolverine APAC/LatAm split
-    assert 1.15 <= COUNTRY_VOLUME["Japan"] <= 1.30
-    assert 0.85 <= COUNTRY_VOLUME["Mexico"] <= 1.05
-    assert 0.90 <= COUNTRY_VOLUME["South Korea"] <= 1.10
+def test_country_list():
+    """Dashboard should reflect actual Skechers JV countries (SKX 10-K)."""
+    from data.simulate import COUNTRIES
+    assert "China" in COUNTRIES
+    assert "Japan" not in COUNTRIES  # Japan is a wholly-owned subsidiary, not a JV
+    assert len(COUNTRIES) == 6
 
 
 def test_channel_aur_values():
@@ -107,3 +104,12 @@ def test_channel_aur_values():
     assert CHANNEL_AUR["Outlet"] >= CHANNEL_AUR["Wholesale"]
     # All AURs should be > $40 (realistic for branded footwear)
     assert all(v >= 40 for v in CHANNEL_AUR.values())
+
+
+def test_country_volume_china_largest():
+    """China is the largest JV market by revenue ($1.22B actual from SKX FY2024 10-K)."""
+    from data.simulate import COUNTRY_VOLUME
+    assert COUNTRY_VOLUME["China"] == max(COUNTRY_VOLUME.values())
+    assert 3.8 <= COUNTRY_VOLUME["China"] <= 4.5
+    assert COUNTRY_VOLUME["South Korea"] == 1.0  # baseline
+    assert COUNTRY_VOLUME["Singapore"] < COUNTRY_VOLUME["Malaysia"]  # city-state < larger market

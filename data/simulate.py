@@ -1,15 +1,22 @@
 # =============================================================================
 # BENCHMARK SOURCE
 # Calibration constants below are anchored to:
-#   Wolverine World Wide, Inc. — FY2025 Annual Report (10-K)
-#   SEC Accession: 0001628280-26-012614  |  Filed: January 2026
+#   Skechers U.S.A., Inc. — FY2024 Annual Report (10-K)
+#   NYSE: SKX  |  SEC Accession: 0000950170-25-030016  |  Filed: February 2025
 #
-# Geographic revenue used for COUNTRY_VOLUME proportions:
-#   Asia Pacific:   $181.7M (+20.4% YoY)  — proxy for Japan + South Korea
-#   Latin America:  $111.7M (+13.4% YoY)  — proxy for Mexico
+# JV countries and ownership stakes (directly from 10-K):
+#   China, Malaysia, Singapore (50%) | Thailand (51%)
+#   Mexico (60%) | South Korea (65%)
+#   Note: Japan is a wholly-owned subsidiary — excluded from JV dashboard.
 #
-# Channel AURs reflect published benchmarks for mid-tier lifestyle/athletic
-# footwear brands operating in JV wholesale + DTC markets.
+# FY2024 Revenue by region:
+#   Americas (AMER): $4,367.9M | EMEA: $2,224.4M | APAC: $2,377.1M
+#   China (separately disclosed): $1,218.2M
+#
+# COUNTRY_VOLUME is normalized to South Korea = 1.0 (~$300M estimated baseline).
+# China volume is anchored to the actual disclosed figure ($1,218M / $300M = 4.10).
+# All other volumes are estimated from regional pools — see spec for derivation:
+#   docs/superpowers/specs/2026-04-27-country-expansion-design.md
 # =============================================================================
 
 import numpy as np
@@ -17,28 +24,35 @@ import pandas as pd
 
 SEED = 42
 
-COUNTRIES = ["Japan", "Mexico", "South Korea"]
+COUNTRIES = ["China", "Malaysia", "Singapore", "Thailand", "Mexico", "South Korea"]
 CHANNELS = ["Normal Retail", "Outlet", "Franchise", "Wholesale", "Ecommerce"]
 DIVISIONS = ["Men's Sport", "Women's Sport", "Women's Comfort", "Kids"]
 QUARTERS = ["Q1 2024", "Q2 2024", "Q3 2024", "Q4 2024", "Q1 2025"]
 
-# Maps each JV country to its Wolverine geographic segment
+# Maps each JV country to its Skechers geographic segment (SKX 10-K terminology)
 COUNTRY_REGION = {
-    "Japan":       "Asia Pacific",
+    "China":       "Asia Pacific",
+    "Malaysia":    "Asia Pacific",
+    "Singapore":   "Asia Pacific",
+    "Thailand":    "Asia Pacific",
     "South Korea": "Asia Pacific",
     "Mexico":      "Latin America",
 }
 
 # Relative revenue weight per country, normalized to South Korea = 1.0
-# Derived from Wolverine APAC ($181.7M): Japan ~55%, South Korea ~45%
-# Derived from Wolverine LatAm ($111.7M): Mexico ~70%
-# Japan:       $99.9M / $81.8M = 1.22
-# Mexico:      $78.2M / $81.8M = 0.96
-# South Korea: $81.8M / $81.8M = 1.00
+# China:       $1,218M actual (SKX 10-K) ÷ $300M baseline = 4.10
+# South Korea: baseline (~$300M estimated, 65% JV, largest non-China APAC JV)
+# Mexico:      ~$290M estimated from AMER international pool ÷ $300M = 0.96
+# Malaysia:    ~$144M estimated from APAC ex-China pool ÷ $300M = 0.48
+# Thailand:    ~$126M estimated from APAC ex-China pool ÷ $300M = 0.42
+# Singapore:   ~$90M estimated (city-state, smaller market) ÷ $300M = 0.30
 COUNTRY_VOLUME = {
-    "Japan":       1.22,
-    "Mexico":      0.96,
+    "China":       4.10,
     "South Korea": 1.00,
+    "Mexico":      0.96,
+    "Malaysia":    0.48,
+    "Thailand":    0.42,
+    "Singapore":   0.30,
 }
 
 # Average Unit Retail by channel — calibrated to footwear industry benchmarks

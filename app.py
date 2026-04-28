@@ -88,4 +88,4 @@ fig = px.bar(
     color_discrete_map={"Actual Sales": "#1A1A1A", "Target": "#A7A9AC"},
 )
 fig.update_yaxes(tickprefix="$", tickformat="~s")
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")

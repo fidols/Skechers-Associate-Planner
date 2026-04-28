@@ -65,7 +65,7 @@ st.dataframe(
         "weeks_of_supply": "WOS",
     })
     .sort_values("ST%", ascending=False),
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
 )
 
@@ -92,7 +92,7 @@ with col_a:
         color_discrete_sequence=["#1A1A1A"],
     )
     fig1.update_xaxes(tickformat=".0%")
-    st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig1, width="stretch")
 
 with col_b:
     fig2 = px.bar(
@@ -105,4 +105,4 @@ with col_b:
         color_discrete_sequence=["#E31837"],
     )
     fig2.update_xaxes(tickformat=".0%")
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width="stretch")

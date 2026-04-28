@@ -59,7 +59,7 @@ fig1 = px.line(
         "End Inventory": "#E31837",
     },
 )
-st.plotly_chart(fig1, use_container_width=True)
+st.plotly_chart(fig1, width="stretch")
 
 # --- OTB Budget vs Committed vs Open-to-Buy by country ---
 otb_summary = (
@@ -96,7 +96,7 @@ fig2 = px.bar(
         "Open to Buy": "#E31837",
     },
 )
-st.plotly_chart(fig2, use_container_width=True)
+st.plotly_chart(fig2, width="stretch")
 
 # --- Months of Supply callout ---
 st.subheader("Months of Supply by Channel")
@@ -125,6 +125,6 @@ st.dataframe(
         "Months of Supply": "{:.1f}",
     })
     .map(highlight_mos, subset=["Months of Supply"]),
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
 )

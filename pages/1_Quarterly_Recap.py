@@ -48,7 +48,7 @@ fig1 = px.bar(
     color_discrete_map={"Actual Sales": "#1A1A1A", "Target": "#A7A9AC"},
 )
 fig1.update_yaxes(tickprefix="$", tickformat="~s")
-st.plotly_chart(fig1, use_container_width=True)
+st.plotly_chart(fig1, width="stretch")
 
 # --- Stacked bar: Sales by division over all quarters ---
 all_filtered = sales_df[sales_df["country"].isin(selected_countries)]
@@ -68,7 +68,7 @@ fig2 = px.bar(
     color_discrete_sequence=["#1A1A1A", "#E31837", "#6D6E71", "#A7A9AC"],
 )
 fig2.update_yaxes(tickprefix="$", tickformat="~s")
-st.plotly_chart(fig2, use_container_width=True)
+st.plotly_chart(fig2, width="stretch")
 
 # --- Summary table with color-coded variance ---
 table = (
@@ -106,6 +106,6 @@ st.dataframe(
         "Variance %": "{:+.1f}%",
     })
     .map(color_variance, subset=["Variance ($)", "Variance %"]),
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
 )

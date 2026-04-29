@@ -43,10 +43,8 @@ baseline_rev = (
 )
 
 baseline = baseline_sku.merge(baseline_rev, on=["country", "division"], how="left")
-# Proxy: fraction of current on-hand stock that hasn't sold through yet
-baseline["baseline_end_inv"] = (
-    baseline["baseline_units_on_hand"] * (1 - baseline["baseline_st_pct"])
-)
+# Ending inventory baseline: units currently on hand
+baseline["baseline_end_inv"] = baseline["baseline_units_on_hand"].copy()
 
 # --- Reset button ---
 if st.button("Reset All"):
@@ -96,7 +94,7 @@ for _, row in baseline.iterrows():
     st_adj = st.session_state.get(f"sp_{row['country']}_{row['division']}_st", 0) / 100
     recv_adj = st.session_state.get(f"sp_{row['country']}_{row['division']}_recv", 0) / 100
 
-    scenario_receipts = row["baseline_units_on_hand"] * (1 + recv_adj)
+    scenario_receipts = (row["baseline_units_on_hand"] + row["baseline_units_sold"]) * (1 + recv_adj)
     scenario_st_pct = min(max(row["baseline_st_pct"] * (1 + st_adj), 0.0), 1.0)
     scenario_units_sold = scenario_receipts * scenario_st_pct
     if row["baseline_units_sold"] > 0:
@@ -143,8 +141,16 @@ total_end_b = scenario_df["Baseline End Inv"].sum()
 total_end_s = scenario_df["Scenario End Inv"].sum()
 delta_end = total_end_s - total_end_b
 
-avg_st_b = scenario_df["Baseline ST%"].mean()
-avg_st_s = scenario_df["Scenario ST%"].mean()
+total_b_units = scenario_df["_baseline_units_sold"].sum()
+total_s_units = scenario_df["_scenario_units_sold"].sum()
+avg_st_b = (
+    (scenario_df["Baseline ST%"] * scenario_df["_baseline_units_sold"]).sum() / total_b_units
+    if total_b_units > 0 else 0.0
+)
+avg_st_s = (
+    (scenario_df["Scenario ST%"] * scenario_df["_scenario_units_sold"]).sum() / total_s_units
+    if total_s_units > 0 else 0.0
+)
 delta_st = avg_st_s - avg_st_b
 
 c1, c2, c3, c4 = st.columns(4)

@@ -55,10 +55,27 @@ st.divider()
 
 # --- KPI cards ---
 kpis = overview_kpis(filtered_sales, filtered_otb, filtered_sku)
+
+# QoQ delta for Total Sales
+prev_idx = quarters.index(selected_quarter) - 1
+sales_delta_str = None
+if prev_idx >= 0:
+    prev_quarter = quarters[prev_idx]
+    prev_sales = sales_df[
+        (sales_df["quarter"] == prev_quarter)
+        & (sales_df["country"].isin(selected_countries))
+    ]
+    prev_kpis = overview_kpis(prev_sales, filtered_otb, filtered_sku)
+    sales_delta = kpis["total_sales_dollars"] - prev_kpis["total_sales_dollars"]
+    if abs(sales_delta) >= 1e6:
+        sales_delta_str = f"${sales_delta/1e6:+.1f}M vs {prev_quarter}"
+    else:
+        sales_delta_str = f"${sales_delta:+,.0f} vs {prev_quarter}"
+
 col1, col2, col3, col4 = st.columns(4)
 total_sales = kpis["total_sales_dollars"]
 sales_display = f"${total_sales/1e6:.1f}M" if total_sales >= 1e6 else f"${total_sales:,.0f}"
-col1.metric("Total Sales", sales_display)
+col1.metric("Total Sales", sales_display, delta=sales_delta_str)
 col2.metric("Sell-Through", f"{kpis['sell_through_pct'] * 100:.1f}%")
 col3.metric("Avg OTB Remaining (units)", f"{kpis['avg_otb_remaining']:,.0f}")
 col4.metric("Risk SKUs", f"{kpis['risk_sku_count']:,}")
@@ -89,3 +106,66 @@ fig = px.bar(
 )
 fig.update_yaxes(tickprefix="$", tickformat="~s")
 st.plotly_chart(fig, width="stretch")
+
+# --- Country snapshot ---
+st.subheader("Country Snapshot")
+
+sales_snap = (
+    filtered_sales.groupby("country")
+    .agg(sales_dollars=("sales_dollars", "sum"), target_dollars=("target_dollars", "sum"))
+    .reset_index()
+)
+sku_snap = (
+    filtered_sku.groupby("country")
+    .agg(
+        units_sold=("units_sold", "sum"),
+        units_on_hand=("units_on_hand", "sum"),
+        risk_skus=("flag", lambda x: (x == "Risk").sum()),
+    )
+    .reset_index()
+)
+sku_snap["sell_through_pct"] = sku_snap["units_sold"] / (
+    sku_snap["units_sold"] + sku_snap["units_on_hand"]
+)
+otb_snap = (
+    filtered_otb.groupby("country")
+    .agg(otb_budget=("otb_budget", "sum"), committed_units=("committed_units", "sum"))
+    .reset_index()
+)
+otb_snap["otb_util_pct"] = otb_snap["committed_units"] / otb_snap["otb_budget"]
+
+snap = sales_snap.merge(
+    sku_snap[["country", "sell_through_pct", "risk_skus"]], on="country", how="left"
+).merge(otb_snap[["country", "otb_util_pct"]], on="country", how="left")
+snap["vs_target"] = (snap["sales_dollars"] - snap["target_dollars"]) / snap["target_dollars"]
+
+snap = snap.rename(columns={
+    "country": "Country",
+    "sales_dollars": "Sales ($)",
+    "vs_target": "vs Target",
+    "sell_through_pct": "ST%",
+    "risk_skus": "Risk SKUs",
+    "otb_util_pct": "OTB Util%",
+})
+
+
+def _color_vs_target(val):
+    if isinstance(val, float) and val == val:
+        return "color: #16A34A" if val >= 0 else "color: #E31837"
+    return ""
+
+
+st.dataframe(
+    snap[["Country", "Sales ($)", "vs Target", "ST%", "Risk SKUs", "OTB Util%"]]
+    .style
+    .format({
+        "Sales ($)": "${:,.0f}",
+        "vs Target": "{:+.1%}",
+        "ST%": "{:.1%}",
+        "Risk SKUs": "{:,.0f}",
+        "OTB Util%": "{:.1%}",
+    })
+    .map(_color_vs_target, subset=["vs Target"]),
+    hide_index=True,
+    width="stretch",
+)

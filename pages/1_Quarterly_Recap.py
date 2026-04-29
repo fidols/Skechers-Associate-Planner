@@ -114,3 +114,9 @@ st.dataframe(
     width="stretch",
     hide_index=True,
 )
+st.download_button(
+    "Download Summary CSV",
+    data=table.to_csv(index=False),
+    file_name=f"quarterly_recap_{selected_quarter.replace(' ', '_')}.csv",
+    mime="text/csv",
+)

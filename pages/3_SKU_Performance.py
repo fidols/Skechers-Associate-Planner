@@ -68,6 +68,15 @@ st.dataframe(
     width="stretch",
     hide_index=True,
 )
+st.download_button(
+    "Download SKU Detail CSV",
+    data=filtered[
+        ["style_id", "style_name", "division", "channel", "country",
+         "units_sold", "units_on_hand", "sell_through_pct", "weeks_of_supply", "flag"]
+    ].to_csv(index=False),
+    file_name="sku_detail.csv",
+    mime="text/csv",
+)
 
 # --- Top 10 / Bottom 10 by sell-through ---
 style_summary = (
@@ -79,6 +88,7 @@ top10 = style_summary.nlargest(10, "sell_through_pct").sort_values("sell_through
 bottom10 = style_summary.nsmallest(10, "sell_through_pct").sort_values(
     "sell_through_pct", ascending=False
 )
+avg_st = style_summary["sell_through_pct"].mean()
 
 col_a, col_b = st.columns(2)
 with col_a:
@@ -92,6 +102,8 @@ with col_a:
         color_discrete_sequence=["#1A1A1A"],
     )
     fig1.update_xaxes(tickformat=".0%")
+    fig1.add_vline(x=avg_st, line_dash="dash", line_color="#6D6E71",
+                   annotation_text="Avg", annotation_position="top right")
     st.plotly_chart(fig1, width="stretch")
 
 with col_b:
@@ -105,4 +117,6 @@ with col_b:
         color_discrete_sequence=["#E31837"],
     )
     fig2.update_xaxes(tickformat=".0%")
+    fig2.add_vline(x=avg_st, line_dash="dash", line_color="#6D6E71",
+                   annotation_text="Avg", annotation_position="top right")
     st.plotly_chart(fig2, width="stretch")

@@ -58,6 +58,14 @@ if st.button("Reset All"):
 
 st.subheader("Adjust Assumptions")
 
+# Initialize missing slider keys to 0 (handles country re-selection edge case)
+for country in selected_countries:
+    for division in DIVISIONS:
+        for suffix in ("_st", "_recv"):
+            key = f"sp_{country}_{division}{suffix}"
+            if key not in st.session_state:
+                st.session_state[key] = 0
+
 # --- One expander per country, 4 division rows inside ---
 for country in selected_countries:
     with st.expander(country, expanded=False):

@@ -85,7 +85,7 @@ fig = px.bar(
     barmode="group",
     title=f"Sales vs. Target by Country — {selected_quarter}",
     labels={"USD": "Revenue (USD)", "country": "Country", "Metric": ""},
-    color_discrete_map={"Actual Sales": "#1A1A1A", "Target": "#A7A9AC"},
+    color_discrete_map={"Actual Sales": "#2563EB", "Target": "#16A34A"},
 )
 fig.update_yaxes(tickprefix="$", tickformat="~s")
 st.plotly_chart(fig, width="stretch")

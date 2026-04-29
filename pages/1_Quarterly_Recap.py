@@ -65,7 +65,12 @@ fig2 = px.bar(
     barmode="stack",
     title="Sales by Division Over Time",
     labels={"sales_dollars": "Revenue (USD)", "quarter": "Quarter", "division": "Division"},
-    color_discrete_sequence=["#1A1A1A", "#E31837", "#6D6E71", "#A7A9AC"],
+    color_discrete_map={
+        "Kids":             "#2563EB",
+        "Men's Sport":      "#E31837",
+        "Women's Comfort":  "#F59E0B",
+        "Women's Sport":    "#7C3AED",
+    },
 )
 fig2.update_yaxes(tickprefix="$", tickformat="~s")
 st.plotly_chart(fig2, width="stretch")

@@ -53,9 +53,9 @@ fig1 = px.line(
     title=f"Monthly Inventory Flow — {country}",
     labels={"month": "Month", "Metric": ""},
     color_discrete_map={
-        "Beginning Inventory": "#6D6E71",
-        "Receipts": "#A7A9AC",
-        "Sales": "#1A1A1A",
+        "Beginning Inventory": "#1A1A1A",
+        "Receipts": "#6D6E71",
+        "Sales": "#16A34A",
         "End Inventory": "#E31837",
     },
 )

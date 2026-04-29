@@ -136,7 +136,7 @@ division_order = ["Men's Sport", "Women's Sport", "Women's Comfort", "Kids"]
 pivot = pivot.reindex(columns=[d for d in division_order if d in pivot.columns])
 
 text_values = [
-    [f"{v:.0%}" if v == v else "" for v in row]
+    [f"{v:.0%}" if v is not None and v == v else "" for v in row]
     for row in pivot.values.tolist()
 ]
 
@@ -147,7 +147,7 @@ fig_heat = go.Figure(
         z=pivot.values.tolist(),
         text=text_values,
         texttemplate="%{text}",
-        colorscale=[[0, "#E31837"], [0.5, "#FFFFFF"], [1, "#16A34A"]],
+        colorscale=[[0, "#E31837"], [0.575, "#FFFFFF"], [1, "#16A34A"]],
         zmin=0,
         zmax=1,
         hovertemplate="Country: %{y}<br>Division: %{x}<br>ST%%: %{text}<extra></extra>",
@@ -156,5 +156,6 @@ fig_heat = go.Figure(
 fig_heat.update_layout(
     xaxis_title="Division",
     yaxis_title="Country",
+    height=max(250, len(pivot) * 60),
 )
 st.plotly_chart(fig_heat, width="stretch")

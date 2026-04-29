@@ -1,5 +1,6 @@
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 
 st.title("SKU Performance")
 st.caption(
@@ -120,3 +121,40 @@ with col_b:
     fig2.add_vline(x=avg_st, line_dash="dash", line_color="#6D6E71",
                    annotation_text="Avg", annotation_position="top right")
     st.plotly_chart(fig2, width="stretch")
+
+# --- ST% Heatmap: Country × Division ---
+st.subheader("Sell-Through % by Country \u00d7 Division")
+
+heatmap_df = (
+    filtered.groupby(["country", "division"])["sell_through_pct"]
+    .mean()
+    .reset_index()
+)
+pivot = heatmap_df.pivot(index="country", columns="division", values="sell_through_pct")
+
+division_order = ["Men's Sport", "Women's Sport", "Women's Comfort", "Kids"]
+pivot = pivot.reindex(columns=[d for d in division_order if d in pivot.columns])
+
+text_values = [
+    [f"{v:.0%}" if v == v else "" for v in row]
+    for row in pivot.values.tolist()
+]
+
+fig_heat = go.Figure(
+    go.Heatmap(
+        x=pivot.columns.tolist(),
+        y=pivot.index.tolist(),
+        z=pivot.values.tolist(),
+        text=text_values,
+        texttemplate="%{text}",
+        colorscale=[[0, "#E31837"], [0.5, "#FFFFFF"], [1, "#16A34A"]],
+        zmin=0,
+        zmax=1,
+        hovertemplate="Country: %{y}<br>Division: %{x}<br>ST%%: %{text}<extra></extra>",
+    )
+)
+fig_heat.update_layout(
+    xaxis_title="Division",
+    yaxis_title="Country",
+)
+st.plotly_chart(fig_heat, width="stretch")

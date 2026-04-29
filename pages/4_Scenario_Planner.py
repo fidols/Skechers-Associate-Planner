@@ -1,3 +1,4 @@
+import pandas as pd
 import streamlit as st
 
 st.title("Scenario Planner")
@@ -14,3 +15,30 @@ selected_countries = st.session_state.get("selected_countries")
 if sku_df is None or sales_df is None or not selected_countries:
     st.warning("Please navigate to the Overview page first to load data and make selections.")
     st.stop()
+
+DIVISIONS = ["Men's Sport", "Women's Sport", "Women's Comfort", "Kids"]
+
+# --- Baseline: aggregate sku_df by country × division ---
+baseline_sku = (
+    sku_df[sku_df["country"].isin(selected_countries)]
+    .groupby(["country", "division"])
+    .agg(
+        baseline_units_on_hand=("units_on_hand", "sum"),
+        baseline_units_sold=("units_sold", "sum"),
+        baseline_st_pct=("sell_through_pct", "mean"),
+    )
+    .reset_index()
+)
+
+# --- Baseline revenue from sales_df (all quarters, selected countries) ---
+baseline_rev = (
+    sales_df[sales_df["country"].isin(selected_countries)]
+    .groupby(["country", "division"])
+    .agg(baseline_revenue=("sales_dollars", "sum"))
+    .reset_index()
+)
+
+baseline = baseline_sku.merge(baseline_rev, on=["country", "division"], how="left")
+baseline["baseline_end_inv"] = (
+    baseline["baseline_units_on_hand"] * (1 - baseline["baseline_st_pct"])
+)

@@ -59,6 +59,13 @@ def test_filters_by_selected_countries():
     assert result.iloc[0]["action"] == "Reduce"
 
 
+def test_zero_avg_weekly_sales_returns_no_data_action():
+    df = _make_sku_df(units_on_hand=100, avg_weekly_sales=0)
+    result = compute_buy_recommendations(df, ["China"], target_wos=8)
+    assert result.iloc[0]["action"] == "No Data"
+    assert result.iloc[0]["recommended_buy"] == 0
+
+
 def test_aggregates_multiple_skus_in_same_division_channel():
     df = pd.DataFrame([
         {"country": "China", "division": "Kids", "channel": "Outlet", "units_on_hand": 30, "avg_weekly_sales": 5},

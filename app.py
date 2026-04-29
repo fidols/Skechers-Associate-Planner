@@ -67,10 +67,12 @@ if prev_idx >= 0:
     ]
     prev_kpis = overview_kpis(prev_sales, filtered_otb, filtered_sku)
     sales_delta = kpis["total_sales_dollars"] - prev_kpis["total_sales_dollars"]
-    if abs(sales_delta) >= 1e6:
-        sales_delta_str = f"${sales_delta/1e6:+.1f}M vs {prev_quarter}"
+    sign = "+" if sales_delta >= 0 else "-"
+    abs_delta = abs(sales_delta)
+    if abs_delta >= 1e6:
+        sales_delta_str = f"{sign}${abs_delta/1e6:.1f}M vs {prev_quarter}"
     else:
-        sales_delta_str = f"${sales_delta:+,.0f} vs {prev_quarter}"
+        sales_delta_str = f"{sign}${abs_delta:,.0f} vs {prev_quarter}"
 
 col1, col2, col3, col4 = st.columns(4)
 total_sales = kpis["total_sales_dollars"]

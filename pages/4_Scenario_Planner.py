@@ -47,3 +47,37 @@ baseline = baseline_sku.merge(baseline_rev, on=["country", "division"], how="lef
 baseline["baseline_end_inv"] = (
     baseline["baseline_units_on_hand"] * (1 - baseline["baseline_st_pct"])
 )
+
+# --- Reset button ---
+if st.button("Reset All"):
+    for country in selected_countries:
+        for division in DIVISIONS:
+            st.session_state[f"sp_{country}_{division}_st"] = 0
+            st.session_state[f"sp_{country}_{division}_recv"] = 0
+    st.rerun()
+
+st.subheader("Adjust Assumptions")
+
+# --- One expander per country, 4 division rows inside ---
+for country in selected_countries:
+    with st.expander(country, expanded=False):
+        for division in DIVISIONS:
+            col_a, col_b = st.columns(2)
+            col_a.slider(
+                f"{division} — ST% Adj",
+                min_value=-50,
+                max_value=50,
+                value=0,
+                step=1,
+                format="%d%%",
+                key=f"sp_{country}_{division}_st",
+            )
+            col_b.slider(
+                f"{division} — Receipts Adj",
+                min_value=-50,
+                max_value=50,
+                value=0,
+                step=1,
+                format="%d%%",
+                key=f"sp_{country}_{division}_recv",
+            )

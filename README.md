@@ -15,6 +15,7 @@ Built with Python + Streamlit using simulated but realistic data across **6 JV m
 | **OTB Tracker** | "Maintains in-season data via monthly OTB by reviewing sales, inventory and identifying opportunities and risks" |
 | **SKU Performance** | "Identify/react to in-season misses/opportunities at the gender/category/division/style/SKU level" — includes ST% heatmap by Country × Division |
 | **Scenario Planner** | What-if analysis — adjust ST% (±30pp) and receipt quantity (±50%) per country and division to model revenue, units sold, and end inventory impact |
+| **Buy Recommendation** | Next-season buy planning — aggregates current WOS by division × channel, recommends buy units and Chase / On Plan / Reduce action relative to a user-adjustable target WOS |
 
 ---
 

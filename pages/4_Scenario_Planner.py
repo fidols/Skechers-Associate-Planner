@@ -66,7 +66,13 @@ for country in selected_countries:
 
 # --- One expander per country, 4 division rows inside ---
 for country in selected_countries:
-    with st.expander(country, expanded=False):
+    active = sum(
+        1 for division in DIVISIONS
+        for suffix in ("_st", "_recv")
+        if st.session_state.get(f"sp_{country}_{division}{suffix}", 0) != 0
+    )
+    label = f"{country}  ·  {active} adjustment{'s' if active != 1 else ''} active" if active > 0 else country
+    with st.expander(label, expanded=False):
         for division in DIVISIONS:
             col_a, col_b = st.columns(2)
             col_a.slider(
@@ -165,18 +171,19 @@ c3.metric(
     delta_color="inverse",
 )
 c4.metric("Avg ST%", f"{avg_st_s:.1%}", delta=f"{delta_st:+.1%}")
+c4.caption(f"Baseline: {avg_st_b:.1%}")
 
 # --- Comparison table ---
 def _color_delta(val):
-    if isinstance(val, (int, float)) and val == val:
-        return "color: #16A34A" if val >= 0 else "color: #E31837"
+    if isinstance(val, (int, float)) and val == val and val != 0:
+        return "color: #16A34A" if val > 0 else "color: #E31837"
     return ""
 
 
 def _color_inv_delta(val):
     """More end inventory is bad (red), less end inventory is good (green)."""
-    if isinstance(val, (int, float)) and val == val:
-        return "color: #E31837" if val >= 0 else "color: #16A34A"
+    if isinstance(val, (int, float)) and val == val and val != 0:
+        return "color: #E31837" if val > 0 else "color: #16A34A"
     return ""
 
 

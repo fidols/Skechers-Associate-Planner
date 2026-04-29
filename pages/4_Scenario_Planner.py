@@ -70,12 +70,12 @@ for country in selected_countries:
         for division in DIVISIONS:
             col_a, col_b = st.columns(2)
             col_a.slider(
-                f"{division} — ST% Adj",
-                min_value=-50,
-                max_value=50,
+                f"{division} — ST% Adj (pp)",
+                min_value=-30,
+                max_value=30,
                 value=0,
                 step=1,
-                format="%d%%",
+                format="%d pp",
                 key=f"sp_{country}_{division}_st",
             )
             col_b.slider(
@@ -91,11 +91,11 @@ for country in selected_countries:
 # --- Scenario engine ---
 rows = []
 for _, row in baseline.iterrows():
-    st_adj = st.session_state.get(f"sp_{row['country']}_{row['division']}_st", 0) / 100
+    st_adj_pp = st.session_state.get(f"sp_{row['country']}_{row['division']}_st", 0) / 100
     recv_adj = st.session_state.get(f"sp_{row['country']}_{row['division']}_recv", 0) / 100
 
     scenario_receipts = (row["baseline_units_on_hand"] + row["baseline_units_sold"]) * (1 + recv_adj)
-    scenario_st_pct = min(max(row["baseline_st_pct"] * (1 + st_adj), 0.0), 1.0)
+    scenario_st_pct = min(max(row["baseline_st_pct"] + st_adj_pp, 0.0), 1.0)
     scenario_units_sold = scenario_receipts * scenario_st_pct
     if row["baseline_units_sold"] > 0:
         scenario_revenue = row["baseline_revenue"] * (
@@ -131,7 +131,9 @@ total_rev_b = scenario_df["Baseline Revenue"].sum()
 total_rev_s = scenario_df["Scenario Revenue"].sum()
 delta_rev = total_rev_s - total_rev_b
 rev_display = f"${total_rev_s/1e6:.1f}M" if total_rev_s >= 1e6 else f"${total_rev_s:,.0f}"
-delta_rev_str = f"${delta_rev/1e6:+.1f}M" if abs(delta_rev) >= 1e6 else f"${delta_rev:+,.0f}"
+sign = "+" if delta_rev >= 0 else "-"
+abs_delta_rev = abs(delta_rev)
+delta_rev_str = f"{sign}${abs_delta_rev/1e6:.1f}M" if abs_delta_rev >= 1e6 else f"{sign}${abs_delta_rev:,.0f}"
 
 total_units_b = scenario_df["_baseline_units_sold"].sum()
 total_units_s = scenario_df["_scenario_units_sold"].sum()

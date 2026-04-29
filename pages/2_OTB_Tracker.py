@@ -91,9 +91,9 @@ fig2 = px.bar(
     title="OTB Budget vs. Committed vs. Open to Buy by Country",
     labels={"Category": "", "country": "Country"},
     color_discrete_map={
-        "OTB Budget": "#1A1A1A",
-        "Committed": "#6D6E71",
-        "Open to Buy": "#E31837",
+        "OTB Budget": "#E31837",
+        "Committed": "#F59E0B",
+        "Open to Buy": "#16A34A",
     },
 )
 st.plotly_chart(fig2, width="stretch")

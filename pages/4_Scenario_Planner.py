@@ -16,6 +16,7 @@ if sku_df is None or sales_df is None or not selected_countries:
     st.warning("Please navigate to the Overview page first to load data and make selections.")
     st.stop()
 
+# Used by slider panel (Task 3) and scenario engine (Task 4)
 DIVISIONS = ["Men's Sport", "Women's Sport", "Women's Comfort", "Kids"]
 
 # --- Baseline: aggregate sku_df by country × division ---
@@ -25,12 +26,15 @@ baseline_sku = (
     .agg(
         baseline_units_on_hand=("units_on_hand", "sum"),
         baseline_units_sold=("units_sold", "sum"),
-        baseline_st_pct=("sell_through_pct", "mean"),
     )
     .reset_index()
 )
+baseline_sku["baseline_st_pct"] = (
+    baseline_sku["baseline_units_sold"]
+    / (baseline_sku["baseline_units_sold"] + baseline_sku["baseline_units_on_hand"])
+)
 
-# --- Baseline revenue from sales_df (all quarters, selected countries) ---
+# --- Baseline revenue from sales_df (all quarters summed — consistent baseline for relative comparison) ---
 baseline_rev = (
     sales_df[sales_df["country"].isin(selected_countries)]
     .groupby(["country", "division"])
@@ -39,6 +43,7 @@ baseline_rev = (
 )
 
 baseline = baseline_sku.merge(baseline_rev, on=["country", "division"], how="left")
+# Proxy: fraction of current on-hand stock that hasn't sold through yet
 baseline["baseline_end_inv"] = (
     baseline["baseline_units_on_hand"] * (1 - baseline["baseline_st_pct"])
 )

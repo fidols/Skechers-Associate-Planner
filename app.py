@@ -34,16 +34,24 @@ selected_quarter = st.sidebar.selectbox("Quarter", quarters, index=len(quarters)
 countries = sorted(sales_df["country"].unique().tolist())
 selected_countries = st.sidebar.multiselect("Countries", countries, default=countries)
 
+divisions = sorted(sales_df["division"].unique().tolist())
+selected_divisions = st.sidebar.multiselect("Division", divisions, default=divisions)
+
 st.session_state["selected_quarter"] = selected_quarter
 st.session_state["selected_countries"] = selected_countries
+st.session_state["selected_divisions"] = selected_divisions
 
 # --- Filter datasets for this view ---
 filtered_sales = sales_df[
     (sales_df["quarter"] == selected_quarter)
     & (sales_df["country"].isin(selected_countries))
+    & (sales_df["division"].isin(selected_divisions))
 ]
 filtered_otb = otb_df[otb_df["country"].isin(selected_countries)]
-filtered_sku = sku_df[sku_df["country"].isin(selected_countries)]
+filtered_sku = sku_df[
+    (sku_df["country"].isin(selected_countries))
+    & (sku_df["division"].isin(selected_divisions))
+]
 
 # --- Page header ---
 st.title("Skechers International JV Planning Dashboard")
@@ -64,6 +72,7 @@ if prev_idx >= 0:
     prev_sales = sales_df[
         (sales_df["quarter"] == prev_quarter)
         & (sales_df["country"].isin(selected_countries))
+        & (sales_df["division"].isin(selected_divisions))
     ]
     prev_kpis = overview_kpis(prev_sales, filtered_otb, filtered_sku)
     sales_delta = kpis["total_sales_dollars"] - prev_kpis["total_sales_dollars"]

@@ -13,6 +13,7 @@ st.divider()
 sales_df = st.session_state.get("sales_df")
 selected_quarter = st.session_state.get("selected_quarter")
 selected_countries = st.session_state.get("selected_countries")
+selected_divisions = st.session_state.get("selected_divisions", [])
 
 if sales_df is None or selected_quarter is None or selected_countries is None:
     st.warning("Please navigate to the Overview page first to load data and make selections.")
@@ -21,6 +22,7 @@ if sales_df is None or selected_quarter is None or selected_countries is None:
 filtered = sales_df[
     (sales_df["quarter"] == selected_quarter)
     & (sales_df["country"].isin(selected_countries))
+    & (sales_df["division"].isin(selected_divisions) if selected_divisions else True)
 ]
 
 # --- Grouped bar: Sales vs Target by channel ---
@@ -51,7 +53,10 @@ fig1.update_yaxes(tickprefix="$", tickformat="~s")
 st.plotly_chart(fig1, width="stretch")
 
 # --- Stacked bar: Sales by division over all quarters ---
-all_filtered = sales_df[sales_df["country"].isin(selected_countries)]
+all_filtered = sales_df[
+    sales_df["country"].isin(selected_countries)
+    & (sales_df["division"].isin(selected_divisions) if selected_divisions else True)
+]
 division_trend = (
     all_filtered.groupby(["quarter", "division"])["sales_dollars"]
     .sum()
@@ -75,14 +80,41 @@ fig2 = px.bar(
 fig2.update_yaxes(tickprefix="$", tickformat="~s")
 st.plotly_chart(fig2, width="stretch")
 
+# --- AUR by Channel ---
+aur_by_channel = (
+    filtered.groupby("channel")["AUR"]
+    .mean()
+    .round(2)
+    .reset_index()
+    .sort_values("AUR", ascending=False)
+)
+fig3 = px.bar(
+    aur_by_channel,
+    x="channel",
+    y="AUR",
+    title=f"Average Unit Retail (AUR) by Channel — {selected_quarter}",
+    labels={"channel": "Channel", "AUR": "Avg Unit Retail (USD)"},
+    text="AUR",
+    color_discrete_sequence=["#2563EB"],
+)
+fig3.update_traces(texttemplate="$%{text:.2f}", textposition="outside")
+fig3.update_yaxes(tickprefix="$")
+fig3.update_layout(margin=dict(t=50, b=40))
+st.plotly_chart(fig3, width="stretch")
+
 # --- Summary table with color-coded variance ---
 table = (
     filtered.groupby(["country", "channel"])
-    .agg(sales_dollars=("sales_dollars", "sum"), target_dollars=("target_dollars", "sum"))
+    .agg(
+        sales_dollars=("sales_dollars", "sum"),
+        target_dollars=("target_dollars", "sum"),
+        avg_aur=("AUR", "mean"),
+    )
     .reset_index()
 )
 table["variance_dollars"] = (table["sales_dollars"] - table["target_dollars"]).round(2)
 table["variance_pct"] = ((table["variance_dollars"] / table["target_dollars"]) * 100).round(1)
+table["avg_aur"] = table["avg_aur"].round(2)
 
 st.subheader("Country × Channel Summary")
 
@@ -100,6 +132,7 @@ table = table.rename(columns={
     "target_dollars": "Target ($)",
     "variance_dollars": "Variance ($)",
     "variance_pct": "Variance %",
+    "avg_aur": "Avg AUR ($)",
 })
 
 st.dataframe(
@@ -109,6 +142,7 @@ st.dataframe(
         "Target ($)": "${:,.0f}",
         "Variance ($)": "${:+,.0f}",
         "Variance %": "{:+.1f}%",
+        "Avg AUR ($)": "${:.2f}",
     })
     .map(color_variance, subset=["Variance ($)", "Variance %"]),
     width="stretch",
